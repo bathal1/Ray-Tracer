@@ -1,10 +1,24 @@
 #include <iostream>
 
-#include "ray.h"
+#include "sphere.h"
 
 using namespace std;
 
-vec3 color(const ray &r){
+bool intersects(const sphere &s, const ray &r){
+    vec3 unit_d = unit_vector(r.direction());
+    vec3 cp = r.origin() - s.center();
+
+    float b = dot(unit_d,cp);
+    float c = cp.squared_length()-s.radius_square;
+    float delta = b*b - c;
+    return (delta >= 0.0f);
+
+}
+
+vec3 color(const ray &r, const sphere &s){
+    if(intersects(s, r)){
+        return s.color();// the ray hit the sphere
+    }
     vec3 ray_unit_direction = unit_vector(r.direction());
     float t = 0.5f* (ray_unit_direction.y() + 1.0f);
     return (1.0f-t)*vec3(1.0f, 1.0f, 1.0f) + vec3(0.5f, 0.7f, 1.0f)*t;
@@ -12,24 +26,26 @@ vec3 color(const ray &r){
 
 int main()
 {
-    int h = 200;
-    int w = 100;
-    cout << "P3\n" << h << " " << w << "\n255\n" ;
+    int nx = 200;
+    int ny = 100;
+    cout << "P3\n" << nx << " " << ny << "\n255\n" ;
 
 
     vec3 origin(0.0f, 0.0f, 0.0f);
-    vec3 vertical(2.0f,0.0f, 0.0f);
-    vec3 horizontal(0.0f,4.0f,0.0f);
+    vec3 vertical(0.0f,2.0f, 0.0f);
+    vec3 horizontal(4.0f,0.0f,0.0f);
     vec3 lower_left_corner(-2.0f, -1.0f, -1.0f);
 
+    sphere first_sphere(vec3(0.0f, 0.0f, -1.0f), vec3(0.2f, 0.4f, 0.3f), 0.5f);
 
-    for(int i = w-1 ; i>=0 ; i--){
-        for(int j=0 ; j<h ; j++){
-            float u = float(i)/float(w);
-            float v = float(j)/float(h);
+    vec3 center = first_sphere.cent;
+    for(int j = ny-1 ; j>=0 ; j--){
+        for(int i=0 ; i<nx ; i++){
+            float u = float(i)/float(nx);
+            float v = float(j)/float(ny);
 
             ray r(origin, lower_left_corner + u*horizontal + v*vertical);
-            vec3 col = color(r);
+            vec3 col = color(r, first_sphere);
 
             float ir = int(col.r() * 255.99);
             float ig = int(col.g() * 255.99);
