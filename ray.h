@@ -5,16 +5,16 @@
 
 class ray{
     public:
-        vec3 origin;
-        vec3 direction;
+        vec3 O;
+        vec3 D;
 
         ray(){}
-        ray(const vec3 &o, const vec3 &d){origin=o; direction=d;}
+        ray(const vec3 &o, const vec3 &d){O=o; D=d;}
 
-        vec3 origin() const {return origin;}
-        vec3 direction() const {return direction;}
+        vec3 origin() const {return O;}
+        vec3 direction() const {return D;}
 
-        vec3 point_at_parameter(float t) {return origin + t*direction;}
-}
+        vec3 point_at_parameter(float t) {return O + t*D;}
+};
 
 #endif // RAY_H
