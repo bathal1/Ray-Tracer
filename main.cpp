@@ -4,21 +4,32 @@
 
 using namespace std;
 
-bool intersects(const sphere &s, const ray &r){
+bool intersection(const sphere &s, const ray &r){
     vec3 unit_d = unit_vector(r.direction());
     vec3 cp = r.origin() - s.center();
 
     float b = dot(unit_d,cp);
     float c = cp.squared_length()-s.radius_square;
     float delta = b*b - c;
-    return (delta >= 0.0f);
+    float t=0.0f; //parameter for the hitpoint position
+    if (delta>=0){
+        t = -b - sqrt(delta);
+    }
+    return t;
 
 }
 
 vec3 color(const ray &r, const sphere &s){
-    if(intersects(s, r)){
-        return s.color();// the ray hit the sphere
+    float p = intersection(s, r);
+    if(p > 0.0f){// if an intersection exists
+        vec3 hitpoint = r.origin() + p*unit_vector(r.direction());
+        vec3 normal = hitpoint - s.center();
+        float r = 0.5f * (normal.x() + 1.0f);
+        float g = 0.5f * (normal.y() + 1.0f);
+        float b = 0.5f * (normal.z() + 1.0f);
+        return vec3(r, g, b);
     }
+    //else
     vec3 ray_unit_direction = unit_vector(r.direction());
     float t = 0.5f* (ray_unit_direction.y() + 1.0f);
     return (1.0f-t)*vec3(1.0f, 1.0f, 1.0f) + vec3(0.5f, 0.7f, 1.0f)*t;
@@ -26,8 +37,8 @@ vec3 color(const ray &r, const sphere &s){
 
 int main()
 {
-    int nx = 200;
-    int ny = 100;
+    int nx = 2000;
+    int ny = 1000;
     cout << "P3\n" << nx << " " << ny << "\n255\n" ;
 
 
@@ -50,7 +61,7 @@ int main()
             float ir = int(col.r() * 255.99);
             float ig = int(col.g() * 255.99);
             float ib = int(col.b() * 255.99);
-            cout << ir << " " << ig << " " << ib << "\n";
+            cout << ir << " " << ig << " " << ib << endl;
         }
     }
 }
