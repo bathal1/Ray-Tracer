@@ -7,21 +7,30 @@
 
 using namespace std;
 
+vec3 random_vector(){
+    vec3 v;
+    do{
+        v = 2.0f*vec3(drand48(), drand48(), drand48()) - vec3(1.0f, 1.0f, 1.0f);
+    }while(v.squared_length() > 1);
+    return v;
+}
+
 vec3 color(const ray &r, hitable *world){
     hit_record rec;
-    if(world->hit(r, 0.0f, MAXFLOAT, rec)){// if an intersection exists, and it's in front of the camera
-        return 0.5f*(rec.normal + vec3(1.0f,1.0f,1.0f));
+    if(world->hit(r, 0.001f, MAXFLOAT, rec)){// if an intersection exists, and it's in front of the camera
+        vec3 target = rec.p + random_vector();
+        return 0.5f*color(ray(rec.p, random_vector() + rec.normal), world);
     }
     //else display the background
     vec3 ray_unit_direction = unit_vector(r.direction());
     float t = 0.5f* (ray_unit_direction.y() + 1.0f);
-    return (1.0f-t)*vec3(1.0f, 1.0f, 1.0f) + vec3(0.5f, 0.7f, 1.0f)*t;
+    return (1.0f-t)*vec3(1.0f, 1.0f, 1.0f) + vec3(0.2f, 0.7f, 1.0f)*t;
 }
 
 int main()
 {
-    int nx = 200;
-    int ny = 100;//canvas dimenensions
+    int nx = 500;
+    int ny = 250;//canvas dimenensions
     int ns = 100; //number of samples for antialiasing
 
     cout << "P3\n" << nx << " " << ny << "\n255\n" ;
@@ -45,7 +54,7 @@ int main()
                 col += color(r, world);
             }
             col /= ns;
-
+            col = vec3(sqrt(col.r()), sqrt(col.g()), sqrt(col.b()));
             float ir = int(col.r() * 255.99);
             float ig = int(col.g() * 255.99);
             float ib = int(col.b() * 255.99);
