@@ -7,10 +7,19 @@
 
 using namespace std;
 
+vec3 random_vector(){
+    vec3 v;
+    do{
+        v = 2.0f*vec3(drand48(), drand48(), drand48()) - vec3(1.0f, 1.0f, 1.0f);
+    }while(v.squared_length() > 1);
+    return v;
+}
+
 vec3 color(const ray &r, hitable *world){
     hit_record rec;
     if(world->hit(r, 0.0f, MAXFLOAT, rec)){// if an intersection exists, and it's in front of the camera
-        return 0.5f*(rec.normal + vec3(1.0f,1.0f,1.0f));
+        vec3 target = rec.p + random_vector();
+        return 0.5f*color(ray(rec.p, random_vector() + rec.normal), world);
     }
     //else display the background
     vec3 ray_unit_direction = unit_vector(r.direction());
