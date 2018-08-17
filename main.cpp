@@ -29,6 +29,7 @@ vec3 color(const ray &r, hitable *world){
 
 int main()
 {
+
     int nx = 500;
     int ny = 250;//canvas dimenensions
     int ns = 100; //number of samples for antialiasing
@@ -41,6 +42,7 @@ int main()
 
     hitable *world = new hitable_list(list,2);
     camera cam;
+    int ns = 10; //number of samples for antialiasing
     for(int j = ny-1 ; j>=0 ; j--){
         for(int i=0 ; i<nx ; i++){
             float u = float(i)/float(nx);
@@ -54,7 +56,7 @@ int main()
                 col += color(r, world);
             }
             col /= ns;
-            col = vec3(sqrt(col.r()), sqrt(col.g()), sqrt(col.b()));
+            col = vec3(sqrt(col.r()), sqrt(col.g()), sqrt(col.b());
             float ir = int(col.r() * 255.99);
             float ig = int(col.g() * 255.99);
             float ib = int(col.b() * 255.99);
