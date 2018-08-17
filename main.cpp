@@ -21,7 +21,9 @@ vec3 color(const ray &r, hitable *world){
 int main()
 {
     int nx = 200;
-    int ny = 100;
+    int ny = 100;//canvas dimenensions
+    int ns = 100; //number of samples for antialiasing
+
     cout << "P3\n" << nx << " " << ny << "\n255\n" ;
 
     hitable *list[2];
@@ -29,15 +31,20 @@ int main()
     list[1] = new sphere(vec3(0.0f, 0.0f, -1.0f), vec3(0.2f, 0.4f, 0.3f), 0.5f);
 
     hitable *world = new hitable_list(list,2);
-
     camera cam;
     for(int j = ny-1 ; j>=0 ; j--){
         for(int i=0 ; i<nx ; i++){
             float u = float(i)/float(nx);
             float v = float(j)/float(ny);
 
-            ray r = cam.get_ray(u,v);
-            vec3 col = color(r, world);
+            vec3 col(0,0,0);
+            for(int k =0; k<ns; k++){
+                float u = float(i + drand48())/float(nx); //add a random seed
+                float v = float(j + drand48())/float(ny);
+                ray r = cam.get_ray(u,v);
+                col += color(r, world);
+            }
+            col /= ns;
 
             float ir = int(col.r() * 255.99);
             float ig = int(col.g() * 255.99);
