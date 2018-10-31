@@ -32,17 +32,19 @@ int main()
 
     int nx = 500;
     int ny = 250;//canvas dimenensions
-    int ns = 100; //number of samples for antialiasing
+    int ns = 15; //number of samples for antialiasing
 
     cout << "P3\n" << nx << " " << ny << "\n255\n" ;
 
+    float R = 0.5f;
     hitable *list[4];
-    list[0] = new sphere(vec3(0.0f, -100.5f, -1.0f), 100.0f, new lambertian(vec3(0.8f,0.8f,0.0f)));
-    list[1] = new sphere(vec3(0.0f, 0.0f, -1.0f), 0.5f, new lambertian(vec3(0.1f,0.2f,0.5f)));
-    list[2] = new sphere(vec3(1.0f,0.0f,-1.0f),0.5f, new metal(vec3(0.8f,0.6f,0.2f), 0.0f));
-    list[3] = new sphere(vec3(-1.0f,0.0f,-1.0f),0.5f, new dielectric(1.5f));
+    list[0] = new sphere(vec3(0.0f, -100.0f - R, -1.0f), 100.0f, new lambertian(vec3(0.8f,0.8f,0.0f)));
+    list[1] = new sphere(vec3(0.0f,0.0f,-1.0f),R, new lambertian(vec3(0,0,1)));
+    list[2] = new sphere(vec3(2*R,0.0f,-1.0f),R, new metal(vec3(1,1,1), 0.0f));
+    list[3] = new sphere(vec3(-2*R,0.0f,-1.0f),R, new dielectric(1.5f));
     hitable *world = new hitable_list(list,4);
-    camera cam;
+
+    camera cam(vec3(-2,2,1), vec3(0.0f,0.0f,-1.0f),vec3(0.0f,1.0f,0.0f),20, float(nx)/float(ny));
     for(int j = ny-1 ; j>=0 ; j--){
         for(int i=0 ; i<nx ; i++){
             float u = float(i)/float(nx);
